@@ -37,34 +37,12 @@ from manager.ProcessManager import WalletCliManager
 
 wallet_dir_path = os.path.join(DATA_DIR, 'wallets')
 makeDir(wallet_dir_path)
-<<<<<<< HEAD
 
-password_regex = re.compile(r"^([a-zA-Z0-9!@#$%^&*]{6,128})$")
-=======
-        
 password_regex = re.compile(r"^([a-zA-Z0-9!@#\$%\^&\*]{1,256})$")
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
 
 from webui import LogViewer
 
 class Hub(QObject):
-
-    on_new_wallet_show_info_event = pyqtSignal(str)
-    on_new_wallet_show_progress_event = pyqtSignal(str)
-    on_new_wallet_ui_reset_event = pyqtSignal()
-    on_new_wallet_update_processed_block_height_event = pyqtSignal(str)
-    on_daemon_update_status_event = pyqtSignal(str)
-    on_main_wallet_ui_reset_event = pyqtSignal()
-    on_wallet_update_info_event = pyqtSignal(str)
-    on_wallet_rescan_spent_completed_event = pyqtSignal()
-    on_wallet_rescan_bc_completed_event = pyqtSignal()
-    on_wallet_send_tx_completed_event = pyqtSignal(str)
-    on_generate_payment_id_event = pyqtSignal(str, str)
-    on_load_address_book_completed_event = pyqtSignal(str)
-    on_tx_detail_found_event = pyqtSignal(str)
-    on_load_tx_history_completed_event = pyqtSignal(str)
-    on_view_wallet_key_completed_event = pyqtSignal(str, str)
-    on_load_app_settings_completed_event = pyqtSignal(str)
 
     def __init__(self, app):
         super(Hub, self).__init__()
@@ -282,7 +260,7 @@ class Hub(QObject):
             self.ui.wallet_info.is_loaded = True
             self.ui.run_wallet_rpc(wallet_password, 2)
             counter = 0
-            
+
             while not self.ui.wallet_rpc_manager.is_ready():
                 self.app_process_events(0.5)
                 if self.ui.wallet_rpc_manager.block_hex:
@@ -343,17 +321,10 @@ class Hub(QObject):
         self.ui.update_wallet_info()
 
         self.on_wallet_rescan_bc_completed_event.emit()
-<<<<<<< HEAD
 
-
-    @pyqtSlot(float, str, str, int, int, str, bool)
-    def send_tx(self, amount, address, payment_id, priority, mixin, tx_desc, save_address):
-=======
-    
-        
-    @Slot(float, str, str, int, int, str, bool, bool)
+    @pyqtSlot(float, str, str, int, int, str, bool, bool)
     def send_tx(self, amount, address, payment_id, priority, mixin, tx_desc, save_address, sweep_all):
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
         if not payment_id and not address.startswith("Sumi"):
             result = QMessageBox.question(self.ui, "Sending Coins Without Payment ID?", \
                                       "Are you sure to send coins without Payment ID?", \
@@ -361,10 +332,8 @@ class Hub(QObject):
             if result == QMessageBox.No:
                 self.on_wallet_send_tx_completed_event.emit('{"status": "CANCELLED", "message": "Sending coin cancelled"}')
                 return
-<<<<<<< HEAD
 
-=======
-            
+
         if sweep_all:
             result = QMessageBox.question(self.ui, "Sending all your coins?", \
                                       "This will send all your coins to target address.<br><br>Are you sure you want to proceed?", \
@@ -372,8 +341,8 @@ class Hub(QObject):
             if result == QMessageBox.No:
                 self.on_wallet_send_tx_completed_event.emit('{"status": "CANCELLED", "message": "Sending coin cancelled"}')
                 return
-            
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
+
         wallet_password, result = self._custom_input_dialog(self.ui, \
                         "Wallet Password", "Please enter wallet password:", QLineEdit.Password)
 
@@ -387,12 +356,7 @@ class Hub(QObject):
             return
 
         amount = int(amount*COIN)
-<<<<<<< HEAD
-        ret = self.ui.wallet_rpc_manager.rpc_request.transfer_split(amount, \
-                                            address, payment_id, priority, mixin)
 
-=======
-        
         if sweep_all:
             _, _, per_subaddress = self.ui.wallet_rpc_manager.rpc_request.get_balance()
             subaddr_indices = []
@@ -400,11 +364,10 @@ class Hub(QObject):
                 if s['unlocked_balance'] > 0:
                     subaddr_indices.append(s['address_index'])
             ret = self.ui.wallet_rpc_manager.rpc_request.transfer_all(address, payment_id, priority, mixin, 0, subaddr_indices)
-        else:  
+        else:
             ret = self.ui.wallet_rpc_manager.rpc_request.transfer_split(amount, \
-                                                address, payment_id, priority, mixin)            
-         
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+                                                address, payment_id, priority, mixin)
+
         if ret['status'] == "ERROR":
             self.on_wallet_send_tx_completed_event.emit(json.dumps(ret));
             self.app_process_events()
@@ -656,17 +619,13 @@ class Hub(QObject):
         log_file = os.path.join(DATA_DIR, 'logs', "sumokoind.log")
         log_dialog = LogViewer(parent=self.ui, log_file=log_file)
         log_dialog.load_log()
-<<<<<<< HEAD
 
-=======
-        
-    @Slot()        
+    @pyqtSlot()
     def paste_seed_words(self):
         text = QApplication.clipboard().text()
         self.on_paste_seed_words_event.emit(text)
-        
-                
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
+
     def update_daemon_status(self, status):
         self.on_daemon_update_status_event.emit(status)
 
@@ -675,14 +634,8 @@ class Hub(QObject):
         for _ in range(int(seconds*10)):
             self.app.processEvents()
             sleep(.1)
-<<<<<<< HEAD
 
 
-=======
-        
-    
-            
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
     def _detail_error_msg(self, title, error_text, error_detailed_text):
         msg = QMessageBox(self.new_wallet_ui)
         msg.setWindowTitle(title)
@@ -719,28 +672,24 @@ class Hub(QObject):
         wallet_info['unlocked_balance'] = print_money(unlocked_balance)
 
         self.on_new_wallet_show_info_event.emit(json.dumps(wallet_info))
-<<<<<<< HEAD
-=======
-    
-    
-    on_new_wallet_show_info_event = Signal(str)
-    on_new_wallet_show_progress_event = Signal(str)
-    on_new_wallet_ui_reset_event = Signal()
-    on_new_wallet_update_processed_block_height_event = Signal(str)
-    
-    on_daemon_update_status_event = Signal(str)
-    on_main_wallet_ui_reset_event = Signal()
-    on_wallet_update_info_event = Signal(str)
-    on_wallet_rescan_spent_completed_event = Signal()
-    on_wallet_rescan_bc_completed_event = Signal()
-    on_wallet_send_tx_completed_event = Signal(str)
-    on_generate_payment_id_event = Signal(str, str)
-    on_load_address_book_completed_event = Signal(str)
-    on_tx_detail_found_event = Signal(str)
-    on_load_tx_history_completed_event = Signal(str)
-    on_view_wallet_key_completed_event = Signal(str, str)
-    on_load_app_settings_completed_event = Signal(str)
-    on_restart_daemon_completed_event = Signal()
-    on_paste_seed_words_event = Signal(str)
-    
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
+
+
+    on_new_wallet_show_info_event = pyqtSignal(str)
+    on_new_wallet_show_progress_event = pyqtSignal(str)
+    on_new_wallet_ui_reset_event = pyqtSignal()
+    on_new_wallet_update_processed_block_height_event = pyqtSignal(str)
+    on_daemon_update_status_event = pyqtSignal(str)
+    on_main_wallet_ui_reset_event = pyqtSignal()
+    on_wallet_update_info_event = pyqtSignal(str)
+    on_wallet_rescan_spent_completed_event = pyqtSignal()
+    on_wallet_rescan_bc_completed_event = pyqtSignal()
+    on_wallet_send_tx_completed_event = pyqtSignal(str)
+    on_generate_payment_id_event = pyqtSignal(str, str)
+    on_load_address_book_completed_event = pyqtSignal(str)
+    on_tx_detail_found_event = pyqtSignal(str)
+    on_load_tx_history_completed_event = pyqtSignal(str)
+    on_view_wallet_key_completed_event = pyqtSignal(str, str)
+    on_load_app_settings_completed_event = pyqtSignal(str)
+    on_restart_daemon_completed_event = pyqtSignal()
+    on_paste_seed_words_event = pyqtSignal(str)

@@ -72,7 +72,7 @@ class LogViewer(QMainWindow):
 
         self.log_file = log_file
         self.setWindowTitle("%s - Log view [%s]" % (APP_NAME, os.path.basename(log_file)))
-   
+
     def load_log(self):
         if not os.path.exists(self.log_file):
             _text = "[No logs]"
@@ -94,15 +94,9 @@ class BaseWebUI(QMainWindow):
         self.debug = debug
         self.html = html
         self.url = "file:///" \
-<<<<<<< HEAD
-            + os.path.join(self.app.property("ResPath"), "www/").replace('\\', '/')
-
-
-=======
             + os.path.join(self.app.property("ResPath"), "www/index.html").replace('\\', '/')
-        
-        
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
+
         self.is_first_load = True
         self.view = PyQt5.QtWebKitWidgets.QWebView(self)
 
@@ -235,7 +229,7 @@ class MainWebUI(BaseWebUI):
         if not hasattr(self, "timer2"):
             self.timer2 = QTimer(self)
             self.timer2.timeout.connect(self.update_wallet_info)
-        
+
         self.timer2.stop()
         self.timer2.start(TIMER2_INTERVAL)
         self.show()
@@ -348,10 +342,8 @@ class MainWebUI(BaseWebUI):
                 for tx in self.wallet_info.wallet_transfers[:2 - len(wallet_info["recent_txs"])]:
                     tx["confirmation"] = self.target_height - tx["height"] if self.target_height > tx["height"] else 0
                     wallet_info["recent_txs"].append(tx)
-<<<<<<< HEAD
 
-=======
-            
+
             adddress_info = self.wallet_rpc_manager.rpc_request.get_address()
             wallet_info['address'] = adddress_info['address']
             wallet_info['used_subaddresses'] = []
@@ -370,11 +362,11 @@ class MainWebUI(BaseWebUI):
                 else:
                     if subaddress['address_index'] > 0:
                         wallet_info['new_subaddresses'].append(subaddress)
-                    
-            wallet_info['used_subaddresses'] = sorted(wallet_info['used_subaddresses'], 
-                                                      key=lambda k:k['balance'], 
+
+            wallet_info['used_subaddresses'] = sorted(wallet_info['used_subaddresses'],
+                                                      key=lambda k:k['balance'],
                                                       reverse=True)
-            
+
             # auto-generate new subaddresses if not enough available
             if len(wallet_info['new_subaddresses']) < MAX_NEW_SUBADDRESSES:
                 for _ in range(MAX_NEW_SUBADDRESSES - len(wallet_info['new_subaddresses'])):
@@ -382,13 +374,13 @@ class MainWebUI(BaseWebUI):
                     new_subaddress['label'] = ""
                     new_subaddress['used'] = False
                     wallet_info['new_subaddresses'].append(new_subaddress)
-            
+
             if len(wallet_info['new_subaddresses']) > MAX_NEW_SUBADDRESSES:
                 wallet_info['new_subaddresses'] = wallet_info['new_subaddresses'][0:MAX_NEW_SUBADDRESSES]
-                        
+
 #             print(json.dumps(wallet_info, indent=4))
-            
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
+
+
             self.hub.on_wallet_update_info_event.emit(json.dumps(wallet_info))
         except Exception, err:
             log(str(err), LEVEL_ERROR)
@@ -442,13 +434,7 @@ class MainWebUI(BaseWebUI):
                     break
 
             if not wallet_password:
-<<<<<<< HEAD
-#                 self.new_wallet_ui = NewWalletWebUI(self.app, self.hub, self.debug)
-#                 self.hub.setNewWalletUI(self.new_wallet_ui)
-#                 self.new_wallet_ui.run()
 
-                self.close()
-=======
                 result = QMessageBox.question(self, "Create/Restore Wallet?", \
                             "Do you want to create (or restore to) a new wallet instead?", \
                             QMessageBox.Yes | QMessageBox.No, defaultButton=QMessageBox.No)
@@ -456,7 +442,6 @@ class MainWebUI(BaseWebUI):
                     self.close()
                 else:
                     self.show_new_wallet_ui()
->>>>>>> f9db8ce62d79869b5a4946cfada64820aa9796e1
                 return
             else:
                 self.run_wallet_rpc(wallet_password, 2)
@@ -474,7 +459,7 @@ class MainWebUI(BaseWebUI):
                 if not hasattr(self, "timer2"):
                     self.timer2 = QTimer(self)
                     self.timer2.timeout.connect(self.update_wallet_info)
-                
+
                 self.timer2.stop()
                 self.timer2.start(TIMER2_INTERVAL)
         else:
